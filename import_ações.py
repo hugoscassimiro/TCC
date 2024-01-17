@@ -1,28 +1,43 @@
-import requests
+import pandas as pd
 
-# Definir a data da negociação
-data = "2024-01-11"
+# Função para extrair campos com base nas posições iniciais e finais
+def extrair_campos(linha, inicio_campo1, fim_campo1, inicio_campo2, fim_campo2):
+    campo1 = linha[inicio_campo1 - 1:fim_campo1].strip()
+    campo2 = linha[inicio_campo2 - 1:fim_campo2].strip()
+    return campo1, campo2
 
-# Definir a URL da API
-url = "https://www.alphavantage.co/query?function=SYMBOL_LOOKUP&symbol=ABEV3&outputsize=full&apikey=E58NPINRO0HQVEN7"
+# Especifique as posições iniciais e finais dos campos
+inicio_campo1 = 3
+fim_campo1 = 10
+inicio_campo2 = 171
+fim_campo2 = 188
 
-# Fazer a solicitação HTTP
-response = requests.get(url)
+# Crie listas para armazenar os valores de cada campo
+campo1_lista = []
+campo2_lista = []
 
-# Verificar se a solicitação foi bem-sucedida
-if response.status_code == 200:
+# Abra o arquivo
+with open('COTAHIST_A2023.TXT', 'r', encoding='latin1') as arquivo:
 
-    # Ler o resultado como um JSON
-    data = response.json()
+    # Itere sobre as linhas do arquivo
+    for linha in arquivo:
+        # Extraia os valores usando as posições iniciais e finais
+        campo1, campo2 = extrair_campos(linha, inicio_campo1, fim_campo1, inicio_campo2, fim_campo2)
 
-    # Extrair os símbolos das ações
-    symbols = data["Symbols"][0]["Symbol"]
+        # Adicione os valores às listas
+        campo1_lista.append(campo1)
+        campo2_lista.append(campo2)
 
-else:
+# Crie o DataFrame do pandas
+df = pd.DataFrame({
+    'Data': campo1_lista,
+    'Volume': campo2_lista
+})
 
-    print("Erro ao acessar a API")
+df['Volume'] = pd.to_numeric(df['Volume'])
+df.dtypes
 
-# Imprimir os símbolos das ações
-print(symbols)
+df_sum = df.groupby('Data')['Volume'].sum().reset_index()
+pd.options.display.float_format = '{:,.2f}'.format
 
-data
+df_sum.to_excel('A2023.xlsx', index=False)
