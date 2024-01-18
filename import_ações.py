@@ -17,7 +17,7 @@ campo1_lista = []
 campo2_lista = []
 
 # Abra o arquivo
-with open('COTAHIST_A2023.TXT', 'r', encoding='latin1') as arquivo:
+with open('C:\TCC\HISTCOT\COTAHIST_A2002.TXT', 'r', encoding='latin1') as arquivo:
 
     # Itere sobre as linhas do arquivo
     for linha in arquivo:
@@ -40,4 +40,4 @@ df.dtypes
 df_sum = df.groupby('Data')['Volume'].sum().reset_index()
 pd.options.display.float_format = '{:,.2f}'.format
 
-df_sum.to_excel('A2023.xlsx', index=False)
+df_sum.to_excel('A2002.xlsx', index=False)
